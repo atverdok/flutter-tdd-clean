@@ -47,7 +47,7 @@ void main() {
         // act
         final call = dataSource.getLastNumberTrivia;
         // assert
-        expect(() => call(), throwsA(isA<CacheException>()));
+        expect(call, throwsA(isA<CacheException>()));
       },
     );
   });
