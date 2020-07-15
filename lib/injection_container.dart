@@ -15,7 +15,7 @@ import 'package:http/http.dart' as http;
 // Service Locator
 final sl = GetIt.instance;
 
-Future<void> init() {
+Future<void> init() async {
   //! Features - Number Trivia
   // Bloc
   sl.registerFactory(
@@ -39,17 +39,13 @@ Future<void> init() {
     ),
   );
 
-  //! External [for NumberTriviaLocalDataSourceImpl]
-  sl.registerSingletonAsync(() async => SharedPreferences.getInstance());
-
   // Data sources
   sl.registerLazySingleton<NumberTriviaRemoteDataSource>(
     () => NumberTriviaRemoteDataSourceImpl(client: sl()),
   );
 
-  sl.registerSingletonWithDependencies<NumberTriviaLocalDataSource>(
+  sl.registerLazySingleton<NumberTriviaLocalDataSource>(
     () => NumberTriviaLocalDataSourceImpl(sharedPreferences: sl()),
-    dependsOn: [SharedPreferences],
   );
 
   //! Core
@@ -57,8 +53,8 @@ Future<void> init() {
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
   //! External
-  // final sharedPreferences = await SharedPreferences.getInstance();
-  // sl.registerLazySingleton(() => sharedPreferences);
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
 
   sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => DataConnectionChecker());
